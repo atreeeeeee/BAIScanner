@@ -3,13 +3,23 @@
   const navStack = [];
 
   function showScreen(id) {
-    screens.forEach(s => s.id === id ? s.classList.add('active') : s.classList.remove('active'));
-    
-    // Clear form inputs when entering the form screen
+    screens.forEach(s => {
+      const isTarget = s.id === id;
+      s.classList.toggle('active', isTarget);
+      if (!isTarget) clearFields(s); // Clear fields when leaving
+    });
+
     if (id === 'form') {
-      document.getElementById('firstName').value = '';
-      document.getElementById('lastName').value = '';
+      clearFields(document.getElementById('form'));
+    } else if (id === 'login') {
+      clearFields(document.getElementById('login'));
     }
+  }
+
+  function clearFields(container) {
+    container.querySelectorAll('input').forEach(input => input.value = '');
+    const err = container.querySelector('.error');
+    if (err) err.textContent = '';
   }
 
   function goToScreen(target) {
@@ -48,7 +58,10 @@
       alert('Please enter both first and last name.');
       return;
     }
+
     alert(`Name submitted: ${fn} ${ln}`);
-    // Do NOT go back — stay on the form page
+    document.getElementById('firstName').value = '';
+    document.getElementById('lastName').value = '';
+    // Don't navigate away – stay on the same screen
   });
 </script>
