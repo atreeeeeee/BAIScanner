@@ -3,93 +3,147 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Enter Name</title>
+  <title>Event Sign-In</title>
   <style>
     body {
       background-color: #424242;
       font-family: Arial, sans-serif;
       color: white;
       text-align: center;
-      padding-top: 50px;
+      margin-top: 50px;
     }
 
-    .button {
-      background-color: #f4511e;
-      color: white;
-      border: none;
-      padding: 10px 20px;
+    input[type="text"],
+    input[type="password"] {
+      padding: 10px;
+      width: 250px;
       margin: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #f4511e;
+      border: none;
+      color: white;
+      padding: 15px 30px;
+      margin: 10px;
+      border-radius: 5px;
       font-size: 16px;
       cursor: pointer;
-      border-radius: 5px;
     }
 
-    .input-field {
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px;
-      border-radius: 5px;
-      border: none;
+    button:hover {
+      opacity: 0.9;
     }
 
-    .info-box {
+    .signin-box {
       background-color: white;
       color: black;
       padding: 20px;
-      margin-top: 30px;
-      border-radius: 10px;
+      margin: 30px auto;
       width: 300px;
-      margin-left: auto;
-      margin-right: auto;
+      border-radius: 10px;
       text-align: left;
-      display: none;
-    }
-
-    .form-section {
-      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Enter Name</h1>
-  <div class="form-section">
-    <input id="firstName" class="input-field" type="text" placeholder="First Name" />
-    <input id="lastName" class="input-field" type="text" placeholder="Last Name" />
-    <br />
-    <button class="button" onclick="submitName()">Submit Name</button>
-  </div>
-
-  <div id="infoBox" class="info-box">
-    <h2>Sign In!</h2>
-    <p><strong>Name:</strong> <span id="displayName"></span></p>
-    <p><strong>Registration Tier:</strong> <span id="regTier"></span></p>
-    <p><strong>Meal Status:</strong> <span id="mealStatus"></span></p>
+  <div id="app">
+    <!-- Dynamic content inserted by JS -->
   </div>
 
   <script>
-    function submitName() {
-      const first = document.getElementById("firstName").value.trim();
-      const last = document.getElementById("lastName").value.trim();
+    const app = document.getElementById('app');
 
-      if (!first || !last) {
-        alert("Please enter both first and last names.");
-        return;
-      }
-
-      const name = `${first} ${last}`;
-      const tier = "Gold"; // Placeholder – replace with backend value
-      const meal = "Not Picked Up"; // Placeholder – replace with backend value
-
-      document.getElementById("displayName").textContent = name;
-      document.getElementById("regTier").textContent = tier;
-      document.getElementById("mealStatus").textContent = meal;
-
-      document.getElementById("infoBox").style.display = "block";
-
-      // Clear the input fields
-      document.getElementById("firstName").value = "";
-      document.getElementById("lastName").value = "";
+    function showLoginPage() {
+      app.innerHTML = `
+        <h1>Login</h1>
+        <input type="text" id="email" placeholder="Email" /><br />
+        <input type="password" id="password" placeholder="Password" /><br />
+        <button onclick="handleLogin()">Login</button>
+      `;
     }
+
+    function handleLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (email && password) {
+        // clear inputs
+        showDaySelection();
+      }
+    }
+
+    function showDaySelection() {
+      app.innerHTML = `
+        <h1>Select Day or Registration</h1>
+        <button onclick="showNameEntry('registration')">Registration</button>
+        <button onclick="showNameEntry('friday')">Friday</button>
+        <button onclick="showSaturdayOptions()">Saturday</button>
+        <button onclick="showSundayOptions()">Sunday</button>
+        <br/><button onclick="showLoginPage()">Back</button>
+      `;
+    }
+
+    function showSaturdayOptions() {
+      app.innerHTML = `
+        <h1>Saturday</h1>
+        <button onclick="showNameEntry('saturday-breakfast')">Breakfast</button>
+        <button onclick="showNameEntry('saturday-lunch')">Lunch</button>
+        <button onclick="showNameEntry('saturday-dinner')">Dinner</button>
+        <button onclick="showNameEntry('saturday-program')">Program</button>
+        <br/><button onclick="showDaySelection()">Back</button>
+      `;
+    }
+
+    function showSundayOptions() {
+      app.innerHTML = `
+        <h1>Sunday</h1>
+        <button onclick="showNameEntry('sunday-breakfast')">Breakfast</button>
+        <button onclick="showNameEntry('sunday-lunch')">Lunch</button>
+        <br/><button onclick="showDaySelection()">Back</button>
+      `;
+    }
+
+    function showNameEntry(context) {
+      app.innerHTML = `
+        <h1>Enter Name for ${context.replace('-', ' ')}</h1>
+        <input type="text" id="firstName" placeholder="First Name" /><br />
+        <input type="text" id="lastName" placeholder="Last Name" /><br />
+        <button onclick="handleNameSubmit('${context}')">Submit Name</button>
+        <br/><button onclick="showDaySelection()">Back</button>
+      `;
+    }
+
+    function handleNameSubmit(context) {
+      const first = document.getElementById('firstName').value.trim();
+      const last = document.getElementById('lastName').value.trim();
+
+      if (first && last) {
+        showSignInBox(first, last, context);
+      }
+    }
+
+    function showSignInBox(first, last, context) {
+      const tier = "GOLD"; // This can be dynamically fetched later
+      const isMeal = context.includes('breakfast') || context.includes('lunch') || context.includes('dinner');
+      const mealStatus = isMeal ? "Eligible" : "N/A";
+
+      app.innerHTML = `
+        <h1>${context.replace('-', ' ')}</h1>
+        <div class="signin-box">
+          <h2>Sign In!</h2>
+          <p><strong>Name:</strong> ${first} ${last}</p>
+          <p><strong>Registration Tier:</strong> ${tier}</p>
+          <p><strong>Meal Status:</strong> ${mealStatus}</p>
+        </div>
+        <br/><button onclick="showDaySelection()">Back</button>
+      `;
+    }
+
+    // Load login page on startup
+    showLoginPage();
   </script>
 </body>
 </html>
