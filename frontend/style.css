@@ -1,0 +1,35 @@
+body {
+  background-color: #424242;
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+input, button {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  background-color: #f4511e;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.popup {
+  background: white;
+  color: black;
+  border: 2px solid #f4511e;
+  padding: 20px;
+  margin: 20px auto;
+  width: 250px;
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
