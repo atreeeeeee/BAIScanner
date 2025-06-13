@@ -6,144 +6,194 @@
   <title>Event Sign-In</title>
   <style>
     body {
-      background-color: #424242;
       font-family: Arial, sans-serif;
+      background-color: #424242;
       color: white;
-      text-align: center;
-      margin-top: 50px;
+      margin: 0;
+      padding: 0;
     }
 
-    input[type="text"],
-    input[type="password"] {
-      padding: 10px;
-      width: 250px;
-      margin: 10px;
-      border: none;
-      border-radius: 5px;
+    .container {
+      padding: 2em;
+      max-width: 600px;
+      margin: auto;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    input, button {
+      padding: 0.5em;
+      margin: 0.5em;
+      font-size: 1em;
     }
 
     button {
       background-color: #f4511e;
-      border: none;
       color: white;
-      padding: 15px 30px;
-      margin: 10px;
-      border-radius: 5px;
-      font-size: 16px;
+      border: none;
       cursor: pointer;
     }
 
-    button:hover {
-      opacity: 0.9;
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .signin-box {
+    .popup {
       background-color: white;
       color: black;
-      padding: 20px;
-      margin: 30px auto;
-      width: 300px;
-      border-radius: 10px;
+      padding: 1em;
+      border-radius: 8px;
       text-align: left;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      box-shadow: 0 0 15px black;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Dynamic content inserted by JS -->
+
+  <!-- Login Page -->
+  <div class="container active" id="loginPage">
+    <h2>Login</h2>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
   </div>
 
+  <!-- Main Menu -->
+  <div class="container" id="mainMenu">
+    <h2>Select Day or Registration</h2>
+    <div class="button-group">
+      <button onclick="navigate('registrationPage')">Registration</button>
+      <button onclick="navigate('fridayPage')">Friday</button>
+      <button onclick="navigate('saturdayMenu')">Saturday</button>
+      <button onclick="navigate('sundayMenu')">Sunday</button>
+      <button onclick="goBack()">Back</button>
+    </div>
+  </div>
+
+  <!-- Saturday Menu -->
+  <div class="container" id="saturdayMenu">
+    <h2>Saturday</h2>
+    <button onclick="navigate('nameEntryPage', 'Saturday Breakfast')">Breakfast</button>
+    <button onclick="navigate('nameEntryPage', 'Saturday Lunch')">Lunch</button>
+    <button onclick="navigate('nameEntryPage', 'Saturday Dinner')">Dinner</button>
+    <button onclick="navigate('nameEntryPage', 'Program')">Program</button>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <!-- Sunday Menu -->
+  <div class="container" id="sundayMenu">
+    <h2>Sunday</h2>
+    <button onclick="navigate('nameEntryPage', 'Sunday Breakfast')">Breakfast</button>
+    <button onclick="navigate('nameEntryPage', 'Sunday Lunch')">Lunch</button>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <!-- Friday Page -->
+  <div class="container" id="fridayPage">
+    <h2>Friday</h2>
+    <button onclick="navigate('nameEntryPage', 'Friday')">Sign In</button>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <!-- Registration Page -->
+  <div class="container" id="registrationPage">
+    <h2>Registration</h2>
+    <button onclick="navigate('nameEntryPage', 'Registration')">Sign In</button>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <!-- Name Entry Page -->
+  <div class="container" id="nameEntryPage">
+    <h2>Enter Your Name</h2>
+    <input id="fname" type="text" placeholder="First Name">
+    <input id="lname" type="text" placeholder="Last Name">
+    <button onclick="submitName()">Submit Name</button>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup" class="popup"></div>
+
   <script>
-    const app = document.getElementById('app');
+    const pages = document.querySelectorAll('.container');
+    let historyStack = [];
+    let currentContext = "";
 
-    function showLoginPage() {
-      app.innerHTML = `
-        <h1>Login</h1>
-        <input type="text" id="email" placeholder="Email" /><br />
-        <input type="password" id="password" placeholder="Password" /><br />
-        <button onclick="handleLogin()">Login</button>
-      `;
+    function navigate(pageId, context = "") {
+      pages.forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      historyStack.push(pageId);
+      currentContext = context;
     }
 
-    function handleLogin() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      if (email && password) {
-        // clear inputs
-        showDaySelection();
+    function goBack() {
+      historyStack.pop();
+      const prevPage = historyStack[historyStack.length - 1];
+      if (prevPage) {
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById(prevPage).classList.add('active');
       }
     }
 
-    function showDaySelection() {
-      app.innerHTML = `
-        <h1>Select Day or Registration</h1>
-        <button onclick="showNameEntry('registration')">Registration</button>
-        <button onclick="showNameEntry('friday')">Friday</button>
-        <button onclick="showSaturdayOptions()">Saturday</button>
-        <button onclick="showSundayOptions()">Sunday</button>
-        <br/><button onclick="showLoginPage()">Back</button>
-      `;
-    }
+    function login() {
+      const email = document.getElementById("email");
+      const password = document.getElementById("password");
 
-    function showSaturdayOptions() {
-      app.innerHTML = `
-        <h1>Saturday</h1>
-        <button onclick="showNameEntry('saturday-breakfast')">Breakfast</button>
-        <button onclick="showNameEntry('saturday-lunch')">Lunch</button>
-        <button onclick="showNameEntry('saturday-dinner')">Dinner</button>
-        <button onclick="showNameEntry('saturday-program')">Program</button>
-        <br/><button onclick="showDaySelection()">Back</button>
-      `;
-    }
-
-    function showSundayOptions() {
-      app.innerHTML = `
-        <h1>Sunday</h1>
-        <button onclick="showNameEntry('sunday-breakfast')">Breakfast</button>
-        <button onclick="showNameEntry('sunday-lunch')">Lunch</button>
-        <br/><button onclick="showDaySelection()">Back</button>
-      `;
-    }
-
-    function showNameEntry(context) {
-      app.innerHTML = `
-        <h1>Enter Name for ${context.replace('-', ' ')}</h1>
-        <input type="text" id="firstName" placeholder="First Name" /><br />
-        <input type="text" id="lastName" placeholder="Last Name" /><br />
-        <button onclick="handleNameSubmit('${context}')">Submit Name</button>
-        <br/><button onclick="showDaySelection()">Back</button>
-      `;
-    }
-
-    function handleNameSubmit(context) {
-      const first = document.getElementById('firstName').value.trim();
-      const last = document.getElementById('lastName').value.trim();
-
-      if (first && last) {
-        showSignInBox(first, last, context);
+      if (email.value && password.value) {
+        email.value = "";
+        password.value = "";
+        navigate('mainMenu');
+      } else {
+        alert("Enter both email and password.");
       }
     }
 
-    function showSignInBox(first, last, context) {
-      const tier = "GOLD"; // This can be dynamically fetched later
-      const isMeal = context.includes('breakfast') || context.includes('lunch') || context.includes('dinner');
-      const mealStatus = isMeal ? "Eligible" : "N/A";
+    function submitName() {
+      const fname = document.getElementById("fname");
+      const lname = document.getElementById("lname");
 
-      app.innerHTML = `
-        <h1>${context.replace('-', ' ')}</h1>
-        <div class="signin-box">
-          <h2>Sign In!</h2>
-          <p><strong>Name:</strong> ${first} ${last}</p>
-          <p><strong>Registration Tier:</strong> ${tier}</p>
-          <p><strong>Meal Status:</strong> ${mealStatus}</p>
-        </div>
-        <br/><button onclick="showDaySelection()">Back</button>
-      `;
+      if (!fname.value || !lname.value) {
+        alert("Please enter both first and last name.");
+        return;
+      }
+
+      // Fake API response data — replace with real call
+      const registrationTier = "GOLD";
+      const mealStatus = "N/A";
+
+      showPopup(fname.value + " " + lname.value, registrationTier, mealStatus);
+
+      fname.value = "";
+      lname.value = "";
     }
 
-    // Load login page on startup
-    showLoginPage();
+    function showPopup(name, tier, meal) {
+      const popup = document.getElementById("popup");
+      popup.innerHTML = `
+        <strong>Sign In!</strong><br>
+        Name: ${name}<br><br>
+        Registration Tier: ${tier}<br><br>
+        Meal Status: ${meal}
+      `;
+      popup.style.display = 'block';
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 2000);
+    }
   </script>
+
 </body>
 </html>
