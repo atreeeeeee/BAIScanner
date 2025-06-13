@@ -1,132 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>BAI Scanner</title>
-<style>
-  body { background-color: #424242; margin:0; font-family:Arial, sans-serif; color:#fff; }
-  .screen { display:none; padding: 2rem; text-align:center; }
-  .screen.active { display:block; }
-  h1 { margin-bottom:1.5rem; }
-  input[type="email"], input[type="password"], input[type="text"] {
-    font-size:1rem; padding:0.5rem; width:80%; margin:0.5rem; border:none; border-radius:4px;
-  }
-  button {
-    font-size:1rem; padding:0.75rem 1.5rem; margin:0.5rem;
-    border:none; border-radius:4px;
-    background-color:#f4511e; color:#fff; cursor:pointer;
-  }
-  button:disabled { opacity:0.5; cursor:not-allowed; }
-  .back-btn { background:none; color:#f4511e; font-size:0.9rem; margin-top:2rem; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enter Name</title>
+  <style>
+    body {
+      background-color: #424242;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    .button {
+      background-color: #f4511e;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .input-field {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .info-box {
+      background-color: white;
+      color: black;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 10px;
+      width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      display: none;
+    }
+
+    .form-section {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-
-<!-- Login Screen -->
-<div id="login" class="screen active">
-  <h1>Login</h1>
-  <input type="email" id="email" placeholder="Email" /><br/>
-  <input type="password" id="password" placeholder="Password" /><br/>
-  <button id="loginBtn">Login</button>
-  <div id="loginError" style="color:#f4511e;"></div>
-</div>
-
-<!-- Dashboard -->
-<div id="dashboard" class="screen">
-  <h1>Main Menu</h1>
-  <button data-target="registration">Registration</button><br/>
-  <button data-target="friday">Friday</button><br/>
-  <button data-target="saturday">Saturday</button><br/>
-  <button data-target="sunday">Sunday</button><br/>
-  <button class="back-btn" data-back>← Log out</button>
-</div>
-
-<!-- Saturday Menu -->
-<div id="saturday" class="screen">
-  <h1>Saturday</h1>
-  <button data-target="form">Breakfast</button><br/>
-  <button data-target="form">Lunch</button><br/>
-  <button data-target="form">Dinner</button><br/>
-  <button data-target="form">Program</button><br/>
-  <button class="back-btn" data-back>← Back</button>
-</div>
-
-<!-- Sunday Menu -->
-<div id="sunday" class="screen">
-  <h1>Sunday</h1>
-  <button data-target="form">Breakfast</button><br/>
-  <button data-target="form">Lunch</button><br/>
-  <button class="back-btn" data-back>← Back</button>
-</div>
-
-<!-- Friday & Registration Form Screens -->
-<div id="friday" class="screen">
-  <h1>Friday</h1>
-  <button data-target="form">Submit Name</button><br/>
-  <button class="back-btn" data-back>← Back</button>
-</div>
-<div id="registration" class="screen">
-  <h1>Registration</h1>
-  <button data-target="form">Submit Name</button><br/>
-  <button class="back-btn" data-back>← Back</button>
-</div>
-
-<!-- Form Screen -->
-<div id="form" class="screen">
   <h1>Enter Name</h1>
-  <input type="text" id="firstName" placeholder="First Name" /><br/>
-  <input type="text" id="lastName" placeholder="Last Name" /><br/>
-  <button id="submitNameBtn">Submit</button><br/>
-  <button class="back-btn" data-back>← Back</button>
-</div>
+  <div class="form-section">
+    <input id="firstName" class="input-field" type="text" placeholder="First Name" />
+    <input id="lastName" class="input-field" type="text" placeholder="Last Name" />
+    <br />
+    <button class="button" onclick="submitName()">Submit Name</button>
+  </div>
 
-<script>
-  const screens = document.querySelectorAll('.screen');
-  const navStack = [];
+  <div id="infoBox" class="info-box">
+    <h2>Sign In!</h2>
+    <p><strong>Name:</strong> <span id="displayName"></span></p>
+    <p><strong>Registration Tier:</strong> <span id="regTier"></span></p>
+    <p><strong>Meal Status:</strong> <span id="mealStatus"></span></p>
+  </div>
 
-  function showScreen(id) {
-    screens.forEach(s => s.id === id ? s.classList.add('active') : s.classList.remove('active'));
-  }
+  <script>
+    function submitName() {
+      const first = document.getElementById("firstName").value.trim();
+      const last = document.getElementById("lastName").value.trim();
 
-  function goToScreen(target) {
-    const current = Array.from(screens).find(s => s.classList.contains('active')).id;
-    navStack.push(current);
-    showScreen(target);
-  }
+      if (!first || !last) {
+        alert("Please enter both first and last names.");
+        return;
+      }
 
-  function goBack() {
-    const prev = navStack.pop();
-    if (prev) showScreen(prev);
-  }
+      const name = `${first} ${last}`;
+      const tier = "Gold"; // Placeholder – replace with backend value
+      const meal = "Not Picked Up"; // Placeholder – replace with backend value
 
-  document.querySelectorAll('button[data-target]').forEach(btn => {
-    btn.addEventListener('click', () => goToScreen(btn.dataset.target));
-  });
+      document.getElementById("displayName").textContent = name;
+      document.getElementById("regTier").textContent = tier;
+      document.getElementById("mealStatus").textContent = meal;
 
-  document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', goBack));
+      document.getElementById("infoBox").style.display = "block";
 
-  document.getElementById('loginBtn').addEventListener('click', () => {
-    const em = document.getElementById('email').value.trim(),
-          pw = document.getElementById('password').value.trim(),
-          err = document.getElementById('loginError');
-    if (!em || !pw) {
-      err.textContent = 'Please enter both email and password.';
-    } else {
-      err.textContent = '';
-      showScreen('dashboard');
+      // Clear the input fields
+      document.getElementById("firstName").value = "";
+      document.getElementById("lastName").value = "";
     }
-  });
-
-  document.getElementById('submitNameBtn').addEventListener('click', () => {
-    const fn = document.getElementById('firstName').value.trim(),
-          ln = document.getElementById('lastName').value.trim();
-    if (!fn || !ln) {
-      return alert('Please enter both first and last name.');
-    }
-    alert(`Name submitted: ${fn} ${ln}`);
-    goBack();
-  });
-</script>
+  </script>
 </body>
 </html>
