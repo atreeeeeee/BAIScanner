@@ -34,5 +34,5 @@ function handleNameSubmit(event) {
 
   setTimeout(() => {
     popup.style.display = 'none';
-  }, 2000);
+  }, 1000);
 }
