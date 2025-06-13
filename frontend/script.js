@@ -19,7 +19,7 @@ function handleNameSubmit(event) {
   document.getElementById('last-name').value = '';
 
   // Dummy values
-  const registrationTier = "GOLD";
+  const registrationTier = "N/A";
   const mealStatus = "N/A";
 
   // Set popup values
